@@ -1,3 +1,30 @@
+1.1.46.0:
+
+  Changes:
+    - Changed Rewired Editor colors and bolded controller names that have an existing controller map due to Unity editor default skin changes at some unknown Unity version in the past causing skin colors to be off.
+  
+  API Changes:
+    - Added InputMapper.ConflictResponse.Swap enum value.
+    - Added InputMapper.ConflictFoundEventData.IsSwapAllowed function.
+    
+  Modified Controller Definitions:
+    - Apple MFI Controller, iOS Fallback: Added Left Stick Button and Right Stick Button mappings for Xbox and Sony controllers. NOTE: Only works in versions of Unity that support these additional buttons. It is not known at what version the button mappings were added to Unity.
+
+1.1.45.3:
+
+  Changes:
+    - Removed reference to TouchInputModule class in RewiredStandaloneInputModule due to deprecation and removal of class in some unknown update version of Unity UI causing compiler errors on a fresh install.
+
+1.1.45.2:
+
+  Changes:
+    - Windows Standalone, Raw Input: Raw Input events are no longer forwarded to Unity when application is paused or out of focus.
+
+1.1.45.1:
+
+  Changes:
+    - Changes to support Game Core plugin in Unity 2017 for specific customer.
+
 1.1.45.0:
   
   Changes:

@@ -16452,6 +16452,12 @@
             The conflict will be ignored and polling will continue.
             </summary>
         </member>
+        <member name="F:Rewired.InputMapper.ConflictResponse.Swap">
+            <summary>
+            The conflicting mapping will be swapped with the assignment.
+            Check <see cref="M:Rewired.InputMapper.ConflictFoundEventData.IsSwapAllowed(System.Int32)"/> to see if swap is allowed for the current assignment before using this response type.
+            </summary>
+        </member>
         <member name="T:Rewired.InputMapper.EventData">
             <summary>
             Base class for event data.
@@ -16526,6 +16532,29 @@
             <summary>
             Is one or more of the conflicting maps protected from removal?
             </summary>
+        </member>
+        <member name="M:Rewired.InputMapper.ConflictFoundEventData.IsSwapAllowed(System.Int32)">
+            <summary>
+            Is swapping allowed for the current assignment?
+            You must check this before passing <see cref="F:Rewired.InputMapper.ConflictResponse.Swap"/> to <see cref="F:Rewired.InputMapper.ConflictFoundEventData.responseCallback"/>.
+            Do not pass <see cref="F:Rewired.InputMapper.ConflictResponse.Swap"/> to <see cref="F:Rewired.InputMapper.ConflictFoundEventData.responseCallback"/> if this function returns false.
+            Swapping is only allowed if all of the following conditions are met:
+            1. Assignment must be a replacement assignment of an existing mapping.
+            2. Only one conflicting mapping was found.
+            3. Conflicting mapping is not protected.
+            4. Conflicting mapping belongs to the same Player as the new assignment.
+            Due to the complexity of swapping full-axis and split-axis / button mappings, some swap operations may result in
+            the creation of additional positive-pole mappings to an Axis-type Action. To avoid creation of more mappings than
+            can be displayed in the UI, pass the maximum number of columns your UI supports for the specific controller type to
+            maxInputFieldCount to prevent this. If there is no more room for a new mapping visually, this function will return false.
+            To ignore input field count limits, pass 0 to maxInputFieldCount.
+            </summary>
+            <param name="maxInputFieldCount">The maximum number of input mapping fields per-Action visible to the user for the current controller type.
+            Example: If your UI displays two columns of input mapping fields for a Joystick, set this value to 2. If a swap operation
+            would result in the creation of extra mappings that would overflow the visible space for mappings
+            (swapping between a full-axis mapping and a button for example), this function will return false and swap will not be allowed.
+            If the UI has no column limit or you want to allow swap regardless of the UI limit, set this value to 0.</param>
+            <returns>True if swap is allowed, false if not.</returns>
         </member>
         <member name="P:Rewired.InputMapper.options">
             <summary>
@@ -21202,6 +21231,11 @@
             This is thread-safe and can be unsubcribed in a destructor.
             </summary>
         </member>
+        <member name="E:Rewired.ReInput.ApplicationPauseChangedEvent">
+            <summary>
+            This is thread-safe and can be unsubcribed in a destructor.
+            </summary>
+        </member>
         <member name="E:Rewired.ReInput.EarlyUpdateEvent">
             <summary>
             This fires every once every main Unity thread update at the beginning
@@ -21390,6 +21424,12 @@
             </summary>
         </member>
         <member name="M:Rewired.ReInput.ApplicationFocusChanged(System.Boolean)">
+            <summary>
+            This gets called regardless of whether or not Rewired is initialized.
+            Nothing else should be done here except to pass the event to UnityVariableWatcher.
+            </summary>
+        </member>
+        <member name="M:Rewired.ReInput.ApplicationPauseChanged(System.Boolean)">
             <summary>
             This gets called regardless of whether or not Rewired is initialized.
             Nothing else should be done here except to pass the event to UnityVariableWatcher.

@@ -24,6 +24,14 @@ public class PlayerMove : MonoBehaviour
     [SerializeField] private int playerId = 0;
     [SerializeField] private Player player;
 
+    public enum State
+    {
+        Normal,
+        Attacking,
+        Hurt,
+    }
+    public State state;
+
     // Start is called before the first frame update
     void Awake()
     {
@@ -37,8 +45,13 @@ public class PlayerMove : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        Move();
-        LookAtEnemy();
+        switch (state)
+        {
+            case State.Normal:
+                Move();
+                LookAtEnemy();
+                break;
+        }
     }
 
 

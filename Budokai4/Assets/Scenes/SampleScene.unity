@@ -190,8 +190,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d0a38b69f53a7bc4c829a1f181c611e2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  target: {fileID: 497930730}
-  smooth: 1
+  targetA: {fileID: 497930730}
+  targetB: {fileID: 821652202}
+  smooth: 2
 --- !u!1 &140331405
 GameObject:
   m_ObjectHideFlags: 0

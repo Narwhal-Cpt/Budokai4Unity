@@ -8,6 +8,7 @@ public class AnimScript : MonoBehaviour
     PlayerCombat combat;
     PlayerMove move;
     public bool canMove;
+    public bool canTransition;
     string currentState;
 
     private void Start()
@@ -27,6 +28,10 @@ public class AnimScript : MonoBehaviour
     public void CanPress()
     {
         combat.canPress = true;
+    }
+    public void CanTransition()
+    {
+        canTransition = true;
     }
     public void CanMove()
     {

@@ -9,6 +9,7 @@ public class PlayerCombat : MonoBehaviour
     Animator animator;
     AnimScript animScript;
     public List<BaseAttack> initialComboAttacks;
+    public BaseAttack currentAttack;
     public bool canPress;
     public bool isGuarding;
     public bool punchHolding;
@@ -45,6 +46,7 @@ public class PlayerCombat : MonoBehaviour
                 if (canPress) { punchPresses++; }
                 if (playerMove.state == PlayerMove.State.Attacking) { return; }
                 animScript.ChangeAnimationState("PunchJab");
+                currentAttack = initialComboAttacks[0];
                 break;
         }
     }

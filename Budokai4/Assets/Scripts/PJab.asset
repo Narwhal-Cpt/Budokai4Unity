@@ -13,3 +13,5 @@ MonoBehaviour:
   m_Name: PJab
   m_EditorClassIdentifier: 
   stateName: PunchJab
+  nextOptions:
+  - {fileID: 11400000, guid: 3dbc433801ab33a418a850fd02aa959f, type: 2}

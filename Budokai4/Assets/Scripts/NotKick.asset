@@ -10,11 +10,11 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: e5fc468feeb85b7449c609270a9d63dc, type: 3}
-  m_Name: PJab
+  m_Name: NotKick
   m_EditorClassIdentifier: 
-  stateName: PunchJab
+  stateName: NotKick
   nextOptions:
-  - {fileID: 11400000, guid: 3dbc433801ab33a418a850fd02aa959f, type: 2}
+  - {fileID: 0}
   - {fileID: 0}
   - {fileID: 0}
   - {fileID: 0}

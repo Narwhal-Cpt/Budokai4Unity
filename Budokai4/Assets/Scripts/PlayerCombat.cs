@@ -16,7 +16,6 @@ public class PlayerCombat : MonoBehaviour
     public int punchPresses;
     public bool kickHolding;
     public int kickPresses;
-    public int noOfPresses;
     private int playerId = 0;
     private Player player;
 
@@ -36,6 +35,10 @@ public class PlayerCombat : MonoBehaviour
         {
             Attack(0);
         }
+        if (player.GetButtonDown("Kick"))
+        {
+            Attack(3);
+        }
     }
 
     void Attack(int type)
@@ -47,6 +50,9 @@ public class PlayerCombat : MonoBehaviour
                 if (playerMove.state == PlayerMove.State.Attacking) { return; }
                 animScript.ChangeAnimationState("PunchJab");
                 currentAttack = initialComboAttacks[0];
+                break;
+            case 3:
+                if (canPress) { kickPresses++; }
                 break;
         }
     }

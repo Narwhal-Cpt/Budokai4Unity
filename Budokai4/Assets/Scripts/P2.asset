@@ -13,3 +13,10 @@ MonoBehaviour:
   m_Name: P2
   m_EditorClassIdentifier: 
   stateName: P2
+  nextOptions:
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 11400000, guid: ce56f67858f71094f81670477ee69593, type: 2}
+  - {fileID: 0}
+  - {fileID: 0}

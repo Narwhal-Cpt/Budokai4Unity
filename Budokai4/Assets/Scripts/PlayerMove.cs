@@ -70,7 +70,6 @@ public class PlayerMove : MonoBehaviour
         }
         float angle = Mathf.SmoothDampAngle(transform.eulerAngles.y, targetAngle, ref turnSmoothVelocity, 0);
         float t = Mathf.DeltaAngle(transform.eulerAngles.y, angle);
-        Debug.Log(t);
         if(t <= 25 && t >= -25)
         {
             controller.Move(transform.forward * currentSpeed * Time.deltaTime);

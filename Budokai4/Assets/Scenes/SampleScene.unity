@@ -1163,7 +1163,6 @@ MonoBehaviour:
   walkSpeed: 5
   currentSpeed: 0
   turnSmooth: 0.5
-  moveVertical: 0
   playerId: 0
   state: 0
 --- !u!143 &497930732

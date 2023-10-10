@@ -96,7 +96,7 @@ public class PlayerMove : MonoBehaviour
 
         if(player.GetButtonDown("Guard") && time <= 0.1f)
         {
-            sideStepTime = 0.3f;
+            sideStepTime = 0.2f;
             state = State.SideStepping;
         }
     }
@@ -113,11 +113,11 @@ public class PlayerMove : MonoBehaviour
         {
             if(t >= 80 && t <= 100)
             {
-                controller.Move(transform.right * currentSpeed * Time.deltaTime);
+                controller.Move(transform.right * currentSpeed * 1.5f * Time.deltaTime);
             }
             else if(t <= -80 && t >= -100)
             {
-                controller.Move(-transform.right * currentSpeed * Time.deltaTime);
+                controller.Move(-transform.right * currentSpeed * 1.5f * Time.deltaTime);
             }
             sideStepTime -= Time.deltaTime;
         }

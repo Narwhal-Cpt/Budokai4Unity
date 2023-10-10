@@ -23,10 +23,14 @@ public class PlayerMove : MonoBehaviour
     float moveVertical;
     [SerializeField] private int playerId = 0;
     [SerializeField] private Player player;
+    float t;
+    float time;
+    float sideStepTime;
 
     public enum State
     {
         Normal,
+        SideStepping,
         Attacking,
         Hurt,
     }
@@ -51,6 +55,9 @@ public class PlayerMove : MonoBehaviour
                 Move();
                 LookAtEnemy();
                 break;
+            case State.SideStepping:
+                SideStep();
+                break;
         }
     }
 
@@ -68,8 +75,10 @@ public class PlayerMove : MonoBehaviour
         {
             velocity.y = -1;
         }
+        controller.Move(velocity * Time.deltaTime);
         float angle = Mathf.SmoothDampAngle(transform.eulerAngles.y, targetAngle, ref turnSmoothVelocity, 0);
-        float t = Mathf.DeltaAngle(transform.eulerAngles.y, angle);
+        t = Mathf.DeltaAngle(transform.eulerAngles.y, angle);
+        if(direction == Vector3.zero) { time = 0; return; } else { time += Time.deltaTime; }
         if(t <= 25 && t >= -25)
         {
             controller.Move(transform.forward * currentSpeed * Time.deltaTime);
@@ -82,12 +91,39 @@ public class PlayerMove : MonoBehaviour
         currentSpeed = Mathf.SmoothDamp(currentSpeed, targetSpeed, ref speedSmoothVelocity, speedSmooth);
         Vector3 moveDir = Quaternion.Euler(0, targetAngle, 0) * Vector3.forward;
         //controller.Move(moveDir.normalized * currentSpeed * Time.deltaTime);
-        controller.Move(velocity * Time.deltaTime);
+
+        if (direction.x <= -0.5f && direction.x >= 0.5f) { return; }
+
+        if(player.GetButtonDown("Guard") && time <= 0.1f)
+        {
+            sideStepTime = 0.3f;
+            state = State.SideStepping;
+        }
     }
 
     void LookAtEnemy()
     {
         Vector3 LookT = new Vector3(target.position.x, transform.position.y, target.position.z);
         transform.LookAt(LookT);
+    }
+
+    void SideStep()
+    {
+        if(sideStepTime > 0)
+        {
+            if(t >= 80 && t <= 100)
+            {
+                controller.Move(transform.right * currentSpeed * Time.deltaTime);
+            }
+            else if(t <= -80 && t >= -100)
+            {
+                controller.Move(-transform.right * currentSpeed * Time.deltaTime);
+            }
+            sideStepTime -= Time.deltaTime;
+        }
+        else
+        {
+            state = State.Normal;
+        }
     }
 }

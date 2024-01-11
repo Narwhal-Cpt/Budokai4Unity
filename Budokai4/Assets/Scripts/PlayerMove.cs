@@ -49,7 +49,7 @@ public class PlayerMove : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        switch (state)
+        switch (state) //changes what will happen depending on state of character
         {
             case State.Normal:
                 Move();
@@ -64,39 +64,35 @@ public class PlayerMove : MonoBehaviour
 
     void Move()
     {
-        moveHorizontal = player.GetAxisRaw("MoveHorizontal");
-        moveVertical = player.GetAxisRaw("MoveVertical");
-        Vector3 direction = new Vector3(moveHorizontal, 0, moveVertical).normalized;
-        float targetAngle = Mathf.Atan2(direction.x, direction.z) * Mathf.Rad2Deg + camT.eulerAngles.y;
-        Vector2 m = new Vector2(moveHorizontal, moveVertical) * Time.deltaTime;
-        Vector2 mDir = m.normalized;
+        moveHorizontal = player.GetAxisRaw("MoveHorizontal"); //left stick and D-Pad left and right assigned to a value
+        moveVertical = player.GetAxisRaw("MoveVertical"); //same as previous line, but with up and down
+        Vector3 direction = new Vector3(moveHorizontal, 0, moveVertical).normalized; //taking those two values and gives it an X and Z value (X for forward and backwards and Z for left and right according to where the character is facing)
+        float targetAngle = Mathf.Atan2(direction.x, direction.z) * Mathf.Rad2Deg + camT.eulerAngles.y; //targets a certain angle depending on where the chamera is facing (used for movement)
+        Vector2 m = new Vector2(moveHorizontal, moveVertical) * Time.deltaTime; //idk honestly, I've been using this movement code for 5+ years
+        Vector2 mDir = m.normalized; //I guess this is important too? idk
 
-        if (controller.isGrounded)
+        if (controller.isGrounded) //using the CharacterController's built-in ground check method and setting movement on the y axis (up and down) to -1 (probably will change considering flying)
         {
             velocity.y = -1;
         }
-        controller.Move(velocity * Time.deltaTime);
+        controller.Move(velocity * Time.deltaTime); //Applying gravity
         float angle = Mathf.SmoothDampAngle(transform.eulerAngles.y, targetAngle, ref turnSmoothVelocity, 0);
-        t = Mathf.DeltaAngle(transform.eulerAngles.y, angle);
-        if(direction == Vector3.zero) { time = 0; return; } else { time += Time.deltaTime; }
+        t = Mathf.DeltaAngle(transform.eulerAngles.y, angle); //translates direction held into direction of the character (facing left and holding up on the left stick/D-Pad? Pointing towards the left)
+        if(direction == Vector3.zero) { time = 0; return; } else { time += Time.deltaTime; } //if the player isn't holding a direction on the left stick or D-Pad, the timer stops. If they are, timer will add
         if(t <= 25 && t >= -25)
         {
-            controller.Move(transform.forward * currentSpeed * Time.deltaTime);
+            controller.Move(transform.forward * currentSpeed * Time.deltaTime); //holding in the character's forward direction? move forward
         }
         else if(t >= 155 || t <= -155)
         {
-            controller.Move(-transform.forward * currentSpeed * Time.deltaTime);
+            controller.Move(-transform.forward * currentSpeed * Time.deltaTime); //holding in the character's back direction? move backward
         }
-        float targetSpeed = (running ? moveSpeed : walkSpeed) * mDir.magnitude;
+        float targetSpeed = (running ? moveSpeed : walkSpeed) * mDir.magnitude; //Oh that's why
         currentSpeed = Mathf.SmoothDamp(currentSpeed, targetSpeed, ref speedSmoothVelocity, speedSmooth);
-        Vector3 moveDir = Quaternion.Euler(0, targetAngle, 0) * Vector3.forward;
-        //controller.Move(moveDir.normalized * currentSpeed * Time.deltaTime);
 
-        if (direction.x <= -0.5f && direction.x >= 0.5f) { return; }
-
-        if(player.GetButtonDown("Guard") && time <= 0.1f)
+        if(player.GetButtonDown("Guard") && time <= 0.1f) //if direction and up/down pressed at about the same time, initiate side step
         {
-            sideStepTime = 0.2f;
+            sideStepTime = 0.2f; //how long character will be side stepping
             state = State.SideStepping;
         }
     }
@@ -109,7 +105,7 @@ public class PlayerMove : MonoBehaviour
 
     void SideStep()
     {
-        if(sideStepTime > 0)
+        if(sideStepTime > 0) //makes character move as long as sideStepTime is above 0
         {
             if(t >= 80 && t <= 100)
             {

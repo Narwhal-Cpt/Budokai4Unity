@@ -26,6 +26,9 @@ public class PlayerMove : MonoBehaviour
     float t;
     float time;
     float sideStepTime;
+    public float dashTime = 5;
+    bool pressedDirection;
+    float firstTap;
 
     public enum State
     {
@@ -68,8 +71,6 @@ public class PlayerMove : MonoBehaviour
         moveVertical = player.GetAxisRaw("MoveVertical"); //same as previous line, but with up and down
         Vector3 direction = new Vector3(moveHorizontal, 0, moveVertical).normalized; //taking those two values and gives it an X and Z value (X for forward and backwards and Z for left and right according to where the character is facing)
         float targetAngle = Mathf.Atan2(direction.x, direction.z) * Mathf.Rad2Deg + camT.eulerAngles.y; //targets a certain angle depending on where the chamera is facing (used for movement)
-        Vector2 m = new Vector2(moveHorizontal, moveVertical) * Time.deltaTime; //idk honestly, I've been using this movement code for 5+ years
-        Vector2 mDir = m.normalized; //I guess this is important too? idk
 
         if (controller.isGrounded) //using the CharacterController's built-in ground check method and setting movement on the y axis (up and down) to -1 (probably will change considering flying)
         {
@@ -78,7 +79,7 @@ public class PlayerMove : MonoBehaviour
         controller.Move(velocity * Time.deltaTime); //Applying gravity
         float angle = Mathf.SmoothDampAngle(transform.eulerAngles.y, targetAngle, ref turnSmoothVelocity, 0);
         t = Mathf.DeltaAngle(transform.eulerAngles.y, angle); //translates direction held into direction of the character (facing left and holding up on the left stick/D-Pad? Pointing towards the left)
-        if(direction == Vector3.zero) { time = 0; return; } else { time += Time.deltaTime; } //if the player isn't holding a direction on the left stick or D-Pad, the timer stops. If they are, timer will add
+        HandleTimers(direction);
         if(t <= 25 && t >= -25)
         {
             controller.Move(transform.forward * currentSpeed * Time.deltaTime); //holding in the character's forward direction? move forward
@@ -87,7 +88,7 @@ public class PlayerMove : MonoBehaviour
         {
             controller.Move(-transform.forward * currentSpeed * Time.deltaTime); //holding in the character's back direction? move backward
         }
-        float targetSpeed = (running ? moveSpeed : walkSpeed) * mDir.magnitude; //Oh that's why
+        float targetSpeed = (running ? moveSpeed : walkSpeed);
         currentSpeed = Mathf.SmoothDamp(currentSpeed, targetSpeed, ref speedSmoothVelocity, speedSmooth);
 
         if(player.GetButtonDown("Guard") && time <= 0.1f) //if direction and up/down pressed at about the same time, initiate side step
@@ -95,6 +96,29 @@ public class PlayerMove : MonoBehaviour
             sideStepTime = 0.2f; //how long character will be side stepping
             state = State.SideStepping;
         }
+    }
+
+    void HandleTimers(Vector3 d)//if the player isn't holding a direction on the left stick or D-Pad, the timer stops. If they are, timer will add
+    {
+        if(d == Vector3.zero)
+        {
+            time = 0;
+            if (pressedDirection) { StartCoroutine(ResetDashTime()); } else { StopCoroutine(ResetDashTime()); }
+        }
+        else
+        {
+            time += Time.deltaTime;
+            if (firstTap == 0)
+            {
+                firstTap = Time.time;
+            }
+        }
+    }
+    IEnumerator ResetDashTime()
+    {
+        yield return new WaitForSeconds(0.3f);
+        pressedDirection = false;
+        firstTap = 0;
     }
 
     void LookAtEnemy()

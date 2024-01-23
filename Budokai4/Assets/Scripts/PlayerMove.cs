@@ -27,8 +27,9 @@ public class PlayerMove : MonoBehaviour
     float time;
     float sideStepTime;
     public float dashTime = 5;
-    bool pressedDirection;
-    float firstTap;
+    bool firstPressedDirection;
+    public float firstTap;
+    public bool secondPressedDirection;
 
     public enum State
     {
@@ -63,7 +64,6 @@ public class PlayerMove : MonoBehaviour
                 break;
         }
     }
-
 
     void Move()
     {
@@ -103,21 +103,46 @@ public class PlayerMove : MonoBehaviour
         if(d == Vector3.zero)
         {
             time = 0;
-            if (pressedDirection) { StartCoroutine(ResetDashTime()); } else { StopCoroutine(ResetDashTime()); }
+            secondPressedDirection = false;
+
+            if(firstTap > 0)
+            {
+                dashTime += Time.deltaTime;
+            }
+
+            if(dashTime >= 0.1f)
+            {
+                firstPressedDirection = false;
+                firstTap = 0;
+                running = false;
+                dashTime = 0;
+            }
         }
         else
         {
+            //StopCoroutine(ResetDashTime());
+            dashTime = 0;
             time += Time.deltaTime;
-            if (firstTap == 0)
+            if (!firstPressedDirection)
             {
-                firstTap = Time.time;
+                while(firstTap <= 0.5)
+                {
+                    firstTap += Time.deltaTime;
+                }
+                firstPressedDirection = true;
+                secondPressedDirection = true;
+            }
+            else if(firstPressedDirection && !secondPressedDirection)
+            {
+                Debug.Log("Double tap");
+                running = true;
             }
         }
     }
     IEnumerator ResetDashTime()
     {
         yield return new WaitForSeconds(0.3f);
-        pressedDirection = false;
+        firstPressedDirection = false;
         firstTap = 0;
     }
 

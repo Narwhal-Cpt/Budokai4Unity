@@ -1091,9 +1091,9 @@ MonoBehaviour:
   velocity: {x: 0, y: 0, z: 0}
   controller: {fileID: 0}
   target: {fileID: 821652202}
-  moveSpeed: 10
+  moveSpeed: 5
   walkSpeed: 2
-  running: 0
+  flyVerticalSpeed: 2
   currentSpeed: 0
   turnSmooth: 0.5
   playerId: 0

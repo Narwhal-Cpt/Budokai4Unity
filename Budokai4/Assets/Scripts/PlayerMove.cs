@@ -14,6 +14,7 @@ public class PlayerMove : MonoBehaviour
     public float moveSpeed;
     public float walkSpeed;
     bool running;
+    public float flyVerticalSpeed;
     public float currentSpeed;
     public float turnSmooth;
     float speedSmooth;
@@ -72,22 +73,21 @@ public class PlayerMove : MonoBehaviour
         Vector3 direction = new Vector3(moveHorizontal, 0, moveVertical).normalized; //taking those two values and gives it an X and Z value (X for forward and backwards and Z for left and right according to where the character is facing)
         float targetAngle = Mathf.Atan2(direction.x, direction.z) * Mathf.Rad2Deg + camT.eulerAngles.y; //targets a certain angle depending on where the chamera is facing (used for movement)
 
-        if (controller.isGrounded) //using the CharacterController's built-in ground check method and setting movement on the y axis (up and down) to -1 (probably will change considering flying)
-        {
-            velocity.y = -1;
-        }
-        controller.Move(velocity * Time.deltaTime); //Applying gravity
         float angle = Mathf.SmoothDampAngle(transform.eulerAngles.y, targetAngle, ref turnSmoothVelocity, 0);
         t = Mathf.DeltaAngle(transform.eulerAngles.y, angle); //translates direction held into direction of the character (facing left and holding up on the left stick/D-Pad? Pointing towards the left)
         HandleTimers(direction);
-        if(t <= 25 && t >= -25)
+
+        if (t <= 48 && t >= -45)
         {
             controller.Move(transform.forward * currentSpeed * Time.deltaTime); //holding in the character's forward direction? move forward
         }
-        else if(t >= 155 || t <= -155)
+        else if(t >= 130 || t <= -130)
         {
             controller.Move(-transform.forward * currentSpeed * Time.deltaTime); //holding in the character's back direction? move backward
         }
+        Debug.Log(t);
+        VerticalFlyControl();
+        controller.Move(velocity * Time.deltaTime); //Applying gravity
         float targetSpeed = (running ? moveSpeed : walkSpeed);
         currentSpeed = Mathf.SmoothDamp(currentSpeed, targetSpeed, ref speedSmoothVelocity, speedSmooth);
 
@@ -95,6 +95,23 @@ public class PlayerMove : MonoBehaviour
         {
             sideStepTime = 0.2f; //how long character will be side stepping
             state = State.SideStepping;
+        }
+    }
+
+    void VerticalFlyControl()
+    {
+        if(!running || moveVertical <= 0.6f && moveVertical >= -0.6f) { velocity.y = 0; return; }
+
+        if(t >= 130 || t <= -130)
+        {
+            if (moveVertical >= 0.7f)
+            {
+                velocity.y = flyVerticalSpeed;
+            }
+            else if (moveVertical <= -0.7f && !controller.isGrounded)
+            {
+                velocity.y = -flyVerticalSpeed;
+            }
         }
     }
 
@@ -120,7 +137,6 @@ public class PlayerMove : MonoBehaviour
         }
         else
         {
-            //StopCoroutine(ResetDashTime());
             dashTime = 0;
             time += Time.deltaTime;
             if (!firstPressedDirection)
@@ -134,16 +150,9 @@ public class PlayerMove : MonoBehaviour
             }
             else if(firstPressedDirection && !secondPressedDirection)
             {
-                Debug.Log("Double tap");
                 running = true;
             }
         }
-    }
-    IEnumerator ResetDashTime()
-    {
-        yield return new WaitForSeconds(0.3f);
-        firstPressedDirection = false;
-        firstTap = 0;
     }
 
     void LookAtEnemy()

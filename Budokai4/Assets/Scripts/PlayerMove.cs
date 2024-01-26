@@ -118,8 +118,7 @@ public class PlayerMove : MonoBehaviour
     void HeightCorrection()
     {
         float dist = Vector3.Distance(transform.position, target.transform.position);
-
-
+        float altDiff = Mathf.Abs(Altitude() - target.Altitude());
     }
     void HandleTimers(Vector3 d)//if the player isn't holding a direction on the left stick or D-Pad, the timer stops. If they are, timer will add
     {

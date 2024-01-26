@@ -2,12 +2,13 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Rewired;
+using System;
 
 public class PlayerMove : MonoBehaviour
 {
     [HideInInspector] public Vector3 velocity;
     [HideInInspector] public CharacterController controller;
-    public Transform target;
+    public PlayerMove target;
     Transform camT;
     Animator animator;
     AnimScript animScript;
@@ -77,7 +78,7 @@ public class PlayerMove : MonoBehaviour
         t = Mathf.DeltaAngle(transform.eulerAngles.y, angle); //translates direction held into direction of the character (facing left and holding up on the left stick/D-Pad? Pointing towards the left)
         HandleTimers(direction);
 
-        if (t <= 48 && t >= -45)
+        if (t <= 50 && t >= -50)
         {
             controller.Move(transform.forward * currentSpeed * Time.deltaTime); //holding in the character's forward direction? move forward
         }
@@ -85,7 +86,7 @@ public class PlayerMove : MonoBehaviour
         {
             controller.Move(-transform.forward * currentSpeed * Time.deltaTime); //holding in the character's back direction? move backward
         }
-        Debug.Log(t);
+        HeightCorrection();
         VerticalFlyControl();
         controller.Move(velocity * Time.deltaTime); //Applying gravity
         float targetSpeed = (running ? moveSpeed : walkSpeed);
@@ -114,7 +115,12 @@ public class PlayerMove : MonoBehaviour
             }
         }
     }
+    void HeightCorrection()
+    {
+        float dist = Vector3.Distance(transform.position, target.transform.position);
 
+
+    }
     void HandleTimers(Vector3 d)//if the player isn't holding a direction on the left stick or D-Pad, the timer stops. If they are, timer will add
     {
         if(d == Vector3.zero)
@@ -157,7 +163,7 @@ public class PlayerMove : MonoBehaviour
 
     void LookAtEnemy()
     {
-        Vector3 LookT = new Vector3(target.position.x, transform.position.y, target.position.z);
+        Vector3 LookT = new Vector3(target.transform.position.x, transform.position.y, target.transform.position.z);
         transform.LookAt(LookT);
     }
 
@@ -179,5 +185,12 @@ public class PlayerMove : MonoBehaviour
         {
             state = State.Normal;
         }
+    }
+
+    public float Altitude()
+    {
+        RaycastHit hit;
+        Physics.Raycast(transform.position, -transform.up, out hit);
+        return hit.distance;
     }
 }

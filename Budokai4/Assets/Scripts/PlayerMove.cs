@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using Rewired;
 using System;
+using Unity.VisualScripting;
 
 public class PlayerMove : MonoBehaviour
 {
@@ -16,6 +17,7 @@ public class PlayerMove : MonoBehaviour
     public float walkSpeed;
     bool running;
     public float flyVerticalSpeed;
+    bool correctHeight;
     public float currentSpeed;
     public float turnSmooth;
     float speedSmooth;
@@ -73,7 +75,7 @@ public class PlayerMove : MonoBehaviour
         moveVertical = player.GetAxisRaw("MoveVertical"); //same as previous line, but with up and down
         Vector3 direction = new Vector3(moveHorizontal, 0, moveVertical).normalized; //taking those two values and gives it an X and Z value (X for forward and backwards and Z for left and right according to where the character is facing)
         float targetAngle = Mathf.Atan2(direction.x, direction.z) * Mathf.Rad2Deg + camT.eulerAngles.y; //targets a certain angle depending on where the chamera is facing (used for movement)
-
+        if(direction == Vector3.zero) { velocity.y = 0; } //to prevent player from flying up or down when stopped
         float angle = Mathf.SmoothDampAngle(transform.eulerAngles.y, targetAngle, ref turnSmoothVelocity, 0);
         t = Mathf.DeltaAngle(transform.eulerAngles.y, angle); //translates direction held into direction of the character (facing left and holding up on the left stick/D-Pad? Pointing towards the left)
         HandleTimers(direction);
@@ -86,11 +88,11 @@ public class PlayerMove : MonoBehaviour
         {
             controller.Move(-transform.forward * currentSpeed * Time.deltaTime); //holding in the character's back direction? move backward
         }
-        HeightCorrection();
+        HeightCorrection(); //if moving forward, goes up or down to match height of opponent
         VerticalFlyControl();
         controller.Move(velocity * Time.deltaTime); //Applying gravity
-        float targetSpeed = (running ? moveSpeed : walkSpeed);
-        currentSpeed = Mathf.SmoothDamp(currentSpeed, targetSpeed, ref speedSmoothVelocity, speedSmooth);
+        float targetSpeed = (running ? moveSpeed : walkSpeed); //are you running? Use moveSpeed. Otherwise, use walkSpeed
+        currentSpeed = Mathf.SmoothDamp(currentSpeed, targetSpeed, ref speedSmoothVelocity, speedSmooth); //smoothly transitions speed from start point (whether that be moving or staying still) to end point (whatever you're wanting to do. Move or stop)
 
         if(player.GetButtonDown("Guard") && time <= 0.1f) //if direction and up/down pressed at about the same time, initiate side step
         {
@@ -101,9 +103,9 @@ public class PlayerMove : MonoBehaviour
 
     void VerticalFlyControl()
     {
-        if(!running || moveVertical <= 0.6f && moveVertical >= -0.6f) { velocity.y = 0; return; }
+        if(moveVertical <= 0.6f && moveVertical >= -0.6f && !correctHeight) { velocity.y = 0; return; }
 
-        if(t >= 130 || t <= -130)
+        if(t >= 130 || t <= -130 && running)
         {
             if (moveVertical >= 0.7f)
             {
@@ -118,7 +120,22 @@ public class PlayerMove : MonoBehaviour
     void HeightCorrection()
     {
         float dist = Vector3.Distance(transform.position, target.transform.position);
-        float altDiff = Mathf.Abs(Altitude() - target.Altitude());
+        float altDiff = Mathf.Abs(transform.position.y - target.transform.position.y);
+        Debug.Log(altDiff);
+        if(altDiff < 0.00001f) { correctHeight = false; return; }
+
+        if (t <= 50 && t >= -50)
+        {
+            correctHeight = true;
+            if(transform.position.y > target.transform.position.y)
+            {
+                velocity.y = -flyVerticalSpeed;
+            }
+            else if(transform.position.y < target.transform.position.y)
+            {
+                velocity.y = flyVerticalSpeed;
+            }
+        }
     }
     void HandleTimers(Vector3 d)//if the player isn't holding a direction on the left stick or D-Pad, the timer stops. If they are, timer will add
     {

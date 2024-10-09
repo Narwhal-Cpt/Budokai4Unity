@@ -16,7 +16,19 @@ MonoBehaviour:
   m_Data:
     m_SerializedData: []
   m_GUID: 03fac816662747849976cbe0694a886e
-  m_SerializeEntries: []
+  m_SerializeEntries:
+  - m_GUID: 36184068c68e06949b1490da5d80b291
+    m_Address: Assets/Animations/anims/ascending_ascending.anim
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 782a1474fe75276489d13ec2ba49ea88
+    m_Address: Assets/Animations/anims/Walk_fwd_Walk_fwd.anim
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: fc21be6489e3a82429cb45ff4c83afc0
+    m_Address: Assets/Animations/0001-0001.AMO.fbx
+    m_ReadOnly: 0
+    m_SerializedLabels: []
   m_ReadOnly: 0
   m_Settings: {fileID: 11400000, guid: 630107657fa54d34db898aeb80651a17, type: 2}
   m_SchemaSet:
